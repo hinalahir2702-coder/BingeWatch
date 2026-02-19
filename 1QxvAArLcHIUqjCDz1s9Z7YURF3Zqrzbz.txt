@@ -1,0 +1,176 @@
+Bingewatch.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineNova</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #111; color: white; }
+input, select, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: none;
+}
+button { background: #ff4757; color: white; font-weight: bold; cursor:pointer; }
+.delete-btn { background:#e84118; margin-top:5px; }
+.sort-btn { background:#3742fa; margin-top:5px; }
+.card {
+  background: #222;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+.section-title { margin-top:30px; font-size:18px; }
+</style>
+</head>
+<body>
+
+<h2>🎬 CineNova</h2>
+
+<input id="title" placeholder="Title">
+
+<select id="type">
+  <option value="Movie">Movie</option>
+  <option value="Series">Series</option>
+</select>
+
+<select id="genre">
+  <option value="">Select Genre</option>
+  <option>Action</option>
+  <option>Adventure</option>
+  <option>Comedy</option>
+  <option>Drama</option>
+  <option>Romance</option>
+  <option>Thriller</option>
+  <option>Horror</option>
+  <option>Sci-Fi</option>
+  <option>Fantasy</option>
+  <option>Documentary</option>
+  <option>Animation</option>
+  <option>Crime</option>
+  <option>Mystery</option>
+  <option>Family</option>
+  <option>Other</option>
+</select>
+
+<input id="rating" type="number" min="1" max="10" placeholder="Rating (1-10)">
+<input id="date" type="date">
+<textarea id="notes" placeholder="Notes"></textarea>
+
+<button onclick="addWatched()">Add to Watched</button>
+<button onclick="addWishlist()">Add to Wishlist</button>
+<button onclick="downloadPDF()">Export as PDF</button>
+
+<h3 class="section-title">Sort Watched By</h3>
+<button class="sort-btn" onclick="sortByDate()">Date</button>
+<button class="sort-btn" onclick="sortByRating()">Rating</button>
+<button class="sort-btn" onclick="sortAlphabetical()">Alphabetical</button>
+
+<h3 class="section-title">📺 Watched</h3>
+<div id="watchedList"></div>
+
+<h3 class="section-title">⭐ Wishlist</h3>
+<div id="wishlist"></div>
+
+<script>
+let watched = JSON.parse(localStorage.getItem("watched")) || [];
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+function save() {
+  localStorage.setItem("watched", JSON.stringify(watched));
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+}
+
+function render() {
+  let watchedDiv = document.getElementById("watchedList");
+  watchedDiv.innerHTML = "";
+  watched.forEach((e, index) => {
+    watchedDiv.innerHTML += `
+      <div class="card">
+        <strong>${e.title}</strong><br>
+        Type: ${e.type}<br>
+        Genre: ${e.genre}<br>
+        Rating: ${e.rating}/10<br>
+        Date Watched: ${e.date}<br>
+        Notes: ${e.notes}<br>
+        <button class="delete-btn" onclick="deleteWatched(${index})">Delete</button>
+      </div>
+    `;
+  });
+
+  let wishDiv = document.getElementById("wishlist");
+  wishDiv.innerHTML = "";
+  wishlist.forEach((e, index) => {
+    wishDiv.innerHTML += `
+      <div class="card">
+        <strong>${e.title}</strong><br>
+        Type: ${e.type}<br>
+        Genre: ${e.genre}<br>
+        Notes: ${e.notes}<br>
+        <button class="delete-btn" onclick="deleteWishlist(${index})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+function getFormData() {
+  return {
+    title: document.getElementById("title").value,
+    type: document.getElementById("type").value,
+    genre: document.getElementById("genre").value,
+    rating: document.getElementById("rating").value,
+    date: document.getElementById("date").value,
+    notes: document.getElementById("notes").value
+  };
+}
+
+function addWatched() {
+  watched.push(getFormData());
+  save();
+  render();
+}
+
+function addWishlist() {
+  wishlist.push(getFormData());
+  save();
+  render();
+}
+
+function deleteWatched(index) {
+  watched.splice(index, 1);
+  save();
+  render();
+}
+
+function deleteWishlist(index) {
+  wishlist.splice(index, 1);
+  save();
+  render();
+}
+
+function sortByDate() {
+  watched.sort((a,b) => new Date(b.date) - new Date(a.date));
+  render();
+}
+
+function sortByRating() {
+  watched.sort((a,b) => b.rating - a.rating);
+  render();
+}
+
+function sortAlphabetical() {
+  watched.sort((a,b) => a.title.localeCompare(b.title));
+  render();
+}
+
+function downloadPDF() {
+  window.print();
+}
+
+render();
+</script>
+
+</body>
+</html>
