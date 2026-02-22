@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>CineNova Tracker - Mobile Friendly</title>
+<title>CineNova Tracker - Mobile Multi-Select</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
@@ -16,12 +16,7 @@ body {
   margin: auto;
   padding: 20px;
 }
-h2 {
-  margin-top: 25px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-}
+h2 { margin-top: 25px; font-size: 24px; font-weight: 700; }
 
 /* Inputs & Selects */
 input, select, textarea {
@@ -34,9 +29,7 @@ input, select, textarea {
   background: #1e1e1e;
   color: #f0f0f0;
 }
-input:focus, select:focus, textarea:focus {
-  outline: 2px solid #3b82f6;
-}
+input:focus, select:focus, textarea:focus { outline: 2px solid #3b82f6; }
 
 /* Buttons */
 button {
@@ -54,34 +47,30 @@ button:hover { opacity: 0.85; }
 .secondary { background: #64748b; color: #fff; }
 
 /* Filter & Delete selected buttons */
-.filter-box select, .filter-box button {
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 12px;
-  border: none;
-  font-size: 15px;
-}
+.filter-box select, .filter-box button { margin: 5px 0; padding: 10px; border-radius: 12px; border: none; font-size: 15px; }
 .filter-box button { width: 48%; margin-right:4%; }
 
 /* Cards */
 .card {
   position: relative;
   background: #1e1e1e;
-  padding: 20px 20px 20px 60px;
+  padding: 20px 20px 20px 50px;
   margin: 15px 0;
   border-radius: 16px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.5);
   font-size: 16px;
   display: flex;
   align-items: flex-start;
-  flex-direction: column;
 }
-.card-content { flex: 1; margin-bottom: 10px; }
+.card label {
+  flex: 1;
+  cursor: pointer;
+}
 .card input[type="checkbox"] {
   position: absolute;
   left: 15px;
   top: 20px;
-  transform: scale(1.5);
+  transform: scale(1.6);
 }
 .card .delete-btn {
   position: absolute;
@@ -104,20 +93,14 @@ button:hover { opacity: 0.85; }
   padding: 8px 12px;
   border-radius: 12px;
   margin-top: 8px;
-}
-
-/* Ensure buttons stack and have spacing */
-.card-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: block;
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
   h2 { font-size: 20px; }
   input, select, textarea, button { font-size: 16px; padding: 12px; }
-  .card { font-size: 16px; padding: 18px 18px 18px 60px; }
+  .card { font-size: 16px; padding: 18px 18px 18px 50px; }
 }
 </style>
 </head>
@@ -218,7 +201,6 @@ button:hover { opacity: 0.85; }
 <div id="wishlistList"></div>
 
 <script>
-// Data
 let watched = JSON.parse(localStorage.getItem("watched")) || [];
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 let timeFilter="", genreFilter="", typeFilter="";
@@ -260,10 +242,10 @@ function render(){
     return match;
   });
   filtered.forEach((e,i)=>{
-    watchedDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}"><div class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</div><div class="card-buttons"><button class="delete-btn" onclick="deleteWatched(${i})">×</button></div></div>`;
+    watchedDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}" id="w${i}"><label for="w${i}" class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</label><div class="card-buttons"><button class="delete-btn" onclick="deleteWatched(${i})">×</button></div></div>`;
   });
   wishlist.forEach((e,i)=>{
-    wishlistDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}"><div class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</div><div class="card-buttons"><button class="move-btn" onclick="moveToWatched(${i})">→</button><button class="delete-btn" onclick="deleteWishlist(${i})">×</button></div></div>`;
+    wishlistDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}" id="l${i}"><label for="l${i}" class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</label><div class="card-buttons"><button class="move-btn" onclick="moveToWatched(${i})">→</button><button class="delete-btn" onclick="deleteWishlist(${i})">×</button></div></div>`;
   });
 }
 render();
