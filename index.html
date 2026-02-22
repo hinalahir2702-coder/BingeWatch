@@ -1,126 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>CineNova Tracker</title>
-
+<title>CineNova Tracker - Mobile Friendly</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* --- General Styles --- */
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #eef2f7, #f8fafc);
-  padding: 30px;
-  max-width: 900px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: #121212;
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 600px;
   margin: auto;
+  padding: 20px;
 }
-
 h2 {
-  margin-top: 40px;
-  color: #1e293b;
-  font-size: 28px; /* bigger headings */
+  margin-top: 25px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
+/* Inputs & Selects */
 input, select, textarea {
-  padding: 15px;
-  margin: 10px 0 15px 0;
-  border-radius: 12px;
-  border: 1px solid #cbd5e1;
   width: 100%;
-  font-size: 18px; /* bigger text */
-  box-sizing: border-box;
-}
-
-textarea {
-  min-height: 80px;
-  font-size: 18px;
-}
-
-button {
-  padding: 15px 20px;
-  margin: 8px 5px 8px 0;
-  border: none;
+  font-size: 16px;
+  padding: 14px;
+  margin: 10px 0;
   border-radius: 12px;
-  cursor: pointer;
+  border: none;
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #3b82f6;
+}
+
+/* Buttons */
+button {
+  font-size: 16px;
   font-weight: 600;
-  font-size: 18px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
 }
-
-.primary { background: #3b82f6; color: white; }
-.success { background: #10b981; color: white; }
-.danger  { background: #ef4444; color: white; }
-.secondary { background: #64748b; color: white; }
-
 button:hover { opacity: 0.85; }
+.primary { background: #3b82f6; color: #fff; width: 48%; margin-right:4%; }
+.success { background: #10b981; color: #fff; width: 48%; margin-left:4%; }
+.danger  { background: #ef4444; color: #fff; }
+.secondary { background: #64748b; color: #fff; }
 
+/* Filter & Delete selected buttons */
+.filter-box select, .filter-box button {
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+}
+.filter-box button { width: 48%; margin-right:4%; }
+
+/* Cards */
 .card {
-  background: white;
-  padding: 20px;
-  margin: 18px 0;
+  position: relative;
+  background: #1e1e1e;
+  padding: 20px 20px 20px 60px;
+  margin: 15px 0;
   border-radius: 16px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-  word-wrap: break-word;
-  font-size: 18px;
-}
-
-.top-row {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  font-size: 16px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  flex-direction: column;
 }
-
-.section {
-  margin-top: 40px;
+.card-content { flex: 1; margin-bottom: 10px; }
+.card input[type="checkbox"] {
+  position: absolute;
+  left: 15px;
+  top: 20px;
+  transform: scale(1.5);
 }
-
-.filter-box {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 25px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+.card .delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   font-size: 18px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+.card .move-btn {
+  background: #10b981;
+  color: white;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-top: 8px;
 }
 
-/* --- Mobile Enhancements --- */
-@media (max-width: 768px) {
+/* Ensure buttons stack and have spacing */
+.card-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  body {
-    padding: 25px;
-  }
-
-  h2 {
-    font-size: 30px;
-  }
-
-  button {
-    font-size: 20px;
-    padding: 18px;
-  }
-
-  input, select, textarea {
-    font-size: 20px;
-    padding: 18px;
-  }
-
-  .card {
-    font-size: 20px;
-    padding: 22px;
-  }
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  h2 { font-size: 20px; }
+  input, select, textarea, button { font-size: 16px; padding: 12px; }
+  .card { font-size: 16px; padding: 18px 18px 18px 60px; }
 }
 </style>
 </head>
 <body>
+<div class="container">
 
 <h2>Add Media</h2>
-
 <input id="title" placeholder="Title">
-
 <select id="type">
   <option>Movie</option>
   <option>Series</option>
   <option>Book</option>
 </select>
-
 <select id="genre">
   <option value="">Select Genre</option>
   <option>Action</option>
@@ -146,23 +156,22 @@ button:hover { opacity: 0.85; }
   <option>GameShow</option>
   <option>TalkShow</option>
 </select>
-
 <input id="rating" type="number" placeholder="Rating (1-10)">
 <input id="date" type="date">
 <textarea id="notes" placeholder="Notes"></textarea>
 
-<button class="primary" onclick="addWatched()">Add to Watched</button>
-<button class="success" onclick="addWishlist()">Add to Wishlist</button>
+<div style="display:flex; gap:8px;">
+  <button class="primary" onclick="addWatched()">Add Watched</button>
+  <button class="success" onclick="addWishlist()">Add Wishlist</button>
+</div>
 
 <div class="filter-box">
 <h2>Filters</h2>
-
 <select onchange="setTimeFilter(this.value)">
   <option value="">All Time</option>
   <option value="thisYear">This Year</option>
   <option value="lastMonth">Last Month</option>
 </select>
-
 <select onchange="setGenreFilter(this.value)">
   <option value="all">All Genres</option>
   <option>Action</option>
@@ -188,197 +197,78 @@ button:hover { opacity: 0.85; }
   <option>GameShow</option>
   <option>TalkShow</option>
 </select>
-
 <select onchange="setTypeFilter(this.value)">
   <option value="all">All Types</option>
   <option>Movie</option>
   <option>Series</option>
   <option>Book</option>
 </select>
-
-<p id="watchedCount"></p>
+<button class="secondary" onclick="sortWatched('date')">Sort</button>
 </div>
 
-<h2>Sort</h2>
-<button class="secondary" onclick="sortWatched('date')">By Date</button>
-<button class="secondary" onclick="sortWatched('rating')">By Rating</button>
-<button class="secondary" onclick="sortWatched('alpha')">Alphabetical</button>
-<button class="secondary" onclick="sortWatched('genre')">By Genre</button>
-<button class="secondary" onclick="sortWatched('type')">By Type</button>
+<div style="display:flex; gap:8px; margin-top:8px;">
+  <button class="danger" onclick="deleteSelected('watched')">Delete Selected Watched</button>
+  <button class="danger" onclick="deleteSelected('wishlist')">Delete Selected Wishlist</button>
+</div>
 
-<div class="section">
 <h2>Watched</h2>
 <div id="watchedList"></div>
-</div>
 
-<div class="section">
 <h2>Wishlist</h2>
 <div id="wishlistList"></div>
-</div>
 
 <script>
+// Data
 let watched = JSON.parse(localStorage.getItem("watched")) || [];
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-let timeFilter = "";
-let genreFilter = "";
-let typeFilter = "";
+let timeFilter="", genreFilter="", typeFilter="";
 
-function save() {
-  localStorage.setItem("watched", JSON.stringify(watched));
-  localStorage.setItem("wishlist", JSON.stringify(wishlist));
-}
+function save(){ localStorage.setItem("watched", JSON.stringify(watched)); localStorage.setItem("wishlist", JSON.stringify(wishlist)); }
+function getFormData(){ return { title:title.value,type:type.value,genre:genre.value,rating:rating.value,date:date.value,notes:notes.value }; }
+function clearForm(){ title.value=""; genre.value=""; rating.value=""; date.value=""; notes.value=""; }
+function addWatched(){ watched.push(getFormData()); save(); render(); clearForm(); }
+function addWishlist(){ wishlist.push(getFormData()); save(); render(); clearForm(); }
+function deleteWatched(i){ if(confirm("Delete this item?")){ watched.splice(i,1); save(); render(); } }
+function deleteWishlist(i){ if(confirm("Delete this item?")){ wishlist.splice(i,1); save(); render(); } }
+function moveToWatched(i){ if(confirm("Move to Watched?")){ watched.push(wishlist[i]); wishlist.splice(i,1); save(); render(); } }
+function setTimeFilter(v){ timeFilter=v; render(); }
+function setGenreFilter(v){ genreFilter=v.toLowerCase(); render(); }
+function setTypeFilter(v){ typeFilter=v.toLowerCase(); render(); }
+function sortWatched(type){ if(type==="date") watched.sort((a,b)=>new Date(b.date)-new Date(a.date)); if(type==="rating") watched.sort((a,b)=>b.rating-a.rating); if(type==="alpha") watched.sort((a,b)=>a.title.localeCompare(b.title)); if(type==="genre") watched.sort((a,b)=>a.genre.localeCompare(b.genre)); if(type==="type") watched.sort((a,b)=>a.type.localeCompare(b.type)); render(); }
 
-function getFormData() {
-  return {
-    title: title.value,
-    type: type.value,
-    genre: genre.value,
-    rating: rating.value,
-    date: date.value,
-    notes: notes.value
-  };
-}
-
-function clearForm() {
-  title.value = "";
-  genre.value = "";
-  rating.value = "";
-  date.value = "";
-  notes.value = "";
-}
-
-function addWatched() {
-  watched.push(getFormData());
-  save();
-  render();
-  clearForm();
-}
-
-function addWishlist() {
-  wishlist.push(getFormData());
-  save();
-  render();
-  clearForm();
-}
-
-function deleteWatched(index) {
-  if (confirm("Delete this item from Watched?")) {
-    watched.splice(index, 1);
-    save();
-    render();
+function deleteSelected(listType){
+  let items = listType==="watched"?watched:wishlist;
+  let checkboxes = document.querySelectorAll(`#${listType}List input[type="checkbox"]:checked`);
+  if(checkboxes.length===0){ alert("Select at least one item."); return; }
+  if(confirm("Delete selected items?")){
+    let indexes = Array.from(checkboxes).map(cb=>parseInt(cb.dataset.index)).sort((a,b)=>b-a);
+    indexes.forEach(i=>items.splice(i,1));
+    save(); render();
   }
 }
 
-function deleteWishlist(index) {
-  if (confirm("Delete this item from Wishlist?")) {
-    wishlist.splice(index, 1);
-    save();
-    render();
-  }
-}
-
-function moveToWatched(index) {
-  if (confirm("Move this to Watched?")) {
-    watched.push(wishlist[index]);
-    wishlist.splice(index, 1);
-    save();
-    render();
-  }
-}
-
-function setTimeFilter(value) {
-  timeFilter = value;
-  render();
-}
-
-function setGenreFilter(value) {
-  genreFilter = value.toLowerCase();
-  render();
-}
-
-function setTypeFilter(value) {
-  typeFilter = value.toLowerCase();
-  render();
-}
-
-function sortWatched(type) {
-  if (type === "date")
-    watched.sort((a,b)=> new Date(b.date)-new Date(a.date));
-  if (type === "rating")
-    watched.sort((a,b)=> b.rating-a.rating);
-  if (type === "alpha")
-    watched.sort((a,b)=> a.title.localeCompare(b.title));
-  if (type === "genre")
-    watched.sort((a,b)=> a.genre.localeCompare(b.genre));
-  if (type === "type")
-    watched.sort((a,b)=> a.type.localeCompare(b.type));
-  render();
-}
-
-function render() {
-  const watchedDiv = document.getElementById("watchedList");
-  const wishlistDiv = document.getElementById("wishlistList");
-
-  watchedDiv.innerHTML = "";
-  wishlistDiv.innerHTML = "";
-
-  let filtered = watched.filter(e => {
-    let match = true;
-    if (timeFilter === "thisYear")
-      match = match && e.date && new Date(e.date).getFullYear() === new Date().getFullYear();
-    if (timeFilter === "lastMonth") {
-      let today = new Date();
-      let lastMonth = new Date(today.getFullYear(), today.getMonth()-1);
-      let d = new Date(e.date);
-      match = match && d.getMonth()===lastMonth.getMonth() && d.getFullYear()===lastMonth.getFullYear();
-    }
-    if (genreFilter && genreFilter !== "all")
-      match = match && e.genre.toLowerCase()===genreFilter;
-    if (typeFilter && typeFilter !== "all")
-      match = match && e.type.toLowerCase()===typeFilter;
+function render(){
+  const watchedDiv=document.getElementById("watchedList");
+  const wishlistDiv=document.getElementById("wishlistList");
+  watchedDiv.innerHTML=""; wishlistDiv.innerHTML="";
+  let filtered=watched.filter(e=>{
+    let match=true;
+    if(timeFilter==="thisYear") match=match&&e.date&&new Date(e.date).getFullYear()===new Date().getFullYear();
+    if(timeFilter==="lastMonth"){ let today=new Date(); let lastMonth=new Date(today.getFullYear(),today.getMonth()-1); let d=new Date(e.date); match=match&&d.getMonth()===lastMonth.getMonth()&&d.getFullYear()===lastMonth.getFullYear();}
+    if(genreFilter&&genreFilter!=="all") match=match&&e.genre.toLowerCase()===genreFilter;
+    if(typeFilter&&typeFilter!=="all") match=match&&e.type.toLowerCase()===typeFilter;
     return match;
   });
-
   filtered.forEach((e,i)=>{
-    watchedDiv.innerHTML += `
-      <div class="card">
-        <div class="top-row">
-          <strong>${e.title}</strong>
-          <button class="danger" onclick="deleteWatched(${i})">Delete</button>
-        </div>
-        Type: ${e.type}<br>
-        Genre: ${e.genre}<br>
-        Rating: ${e.rating}/10<br>
-        Date: ${e.date}<br>
-        Notes: ${e.notes}
-      </div>
-    `;
+    watchedDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}"><div class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</div><div class="card-buttons"><button class="delete-btn" onclick="deleteWatched(${i})">×</button></div></div>`;
   });
-
   wishlist.forEach((e,i)=>{
-    wishlistDiv.innerHTML += `
-      <div class="card">
-        <div class="top-row">
-          <strong>${e.title}</strong>
-          <div>
-            <button class="success" onclick="moveToWatched(${i})">Move</button>
-            <button class="danger" onclick="deleteWishlist(${i})">Delete</button>
-          </div>
-        </div>
-        Type: ${e.type}<br>
-        Genre: ${e.genre}<br>
-        Rating: ${e.rating}/10<br>
-        Date: ${e.date}<br>
-        Notes: ${e.notes}
-      </div>
-    `;
+    wishlistDiv.innerHTML+=`<div class="card"><input type="checkbox" data-index="${i}"><div class="card-content"><strong>${e.title}</strong><br>Type: ${e.type}<br>Genre: ${e.genre}<br>Rating: ${e.rating}/10<br>Date: ${e.date}<br>Notes: ${e.notes}</div><div class="card-buttons"><button class="move-btn" onclick="moveToWatched(${i})">→</button><button class="delete-btn" onclick="deleteWishlist(${i})">×</button></div></div>`;
   });
-
-  watchedCount.innerText = "Filtered Results: " + filtered.length;
 }
-
 render();
 </script>
 
+</div>
 </body>
 </html>
