@@ -133,7 +133,7 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
     <h1>Procrastination Productions</h1>
     <p id="stats">All systems go</p>
   </div>
-  <button class="export-btn" onclick="window.print()">PDF Report</button>
+  <button class="export-btn" onclick="generateReport()">PDF Report</button>
 </div>
 
 <div class="filter-bar">
@@ -193,7 +193,7 @@ function populateGenres() {
   });
 }
 
-const STORAGE_KEY = "proc_prod_vMerge";
+const STORAGE_KEY = "proc_prod_vRobustExport";
 let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { completed: [], queue: [], progress: [] };
 let editingId = null;
 let editingFromList = null;
@@ -203,60 +203,60 @@ let pressTimer;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
 
+// ROBUST EXPORT (Opens in new tab)
 function exportData() {
   const dataStr = JSON.stringify(items);
   const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-  let linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', 'proc_backup.json');
-  document.body.appendChild(linkElement);
-  linkElement.click();
-  linkElement.remove();
+  window.open(dataUri, '_blank');
 }
 
-// MERGE LOGIC
+// ROBUST IMPORT (File Picker)
 function importData(input) {
   const file = input.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const imported = JSON.parse(e.target.result);
       if (imported.completed && imported.queue && imported.progress) {
-        
-        // Merge lists by ID to prevent duplicates
         ['completed', 'queue', 'progress'].forEach(listName => {
           if (imported[listName]) {
             imported[listName].forEach(newItem => {
-              // Check if item exists in current data
               let exists = false;
               ['completed', 'queue', 'progress'].forEach(currentListName => {
                 const index = items[currentListName].findIndex(item => item.id === newItem.id);
                 if (index !== -1) {
-                  items[currentListName][index] = newItem; // Update existing
+                  items[currentListName][index] = newItem;
                   exists = true;
                 }
               });
               if (!exists) {
-                items[listName].push(newItem); // Add new
+                items[listName].push(newItem);
               }
             });
           }
         });
-
-        save();
-        render();
-        alert("Data merged successfully!");
-      } else {
-        alert("Invalid backup file format.");
-      }
-    } catch (err) {
-      alert("Error reading file. The file might be corrupted.");
-    }
+        save(); render(); alert("Data merged successfully!");
+      } else { alert("Invalid backup file format."); }
+    } catch (err) { alert("Error reading file. The file might be corrupted."); }
   };
   reader.readAsText(file);
   input.value = '';
+}
+
+// PDF REPORT (Opens in new tab)
+function generateReport() {
+  let content = "<h1>Procrastination Productions Report</h1>";
+  ['progress', 'queue', 'completed'].forEach(list => {
+    content += `<h2>${list.toUpperCase()}</h2>`;
+    items[list].forEach(item => {
+      content += `<p><strong>${item.title}</strong> (${item.type} - ${item.genre}) - Rating: ${item.rating}<br>Notes: ${item.notes}</p><hr>`;
+    });
+  });
+  const win = window.open('', '_blank');
+  win.document.write(content);
+  win.document.close();
+  win.print();
 }
 
 // SELECTION LOGIC
