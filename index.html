@@ -133,7 +133,7 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
     <h1>Procrastination Productions</h1>
     <p id="stats">All systems go</p>
   </div>
-  <button class="export-btn" onclick="generateReport()">PDF Report</button>
+  <button class="export-btn" onclick="window.print()">PDF Report</button>
 </div>
 
 <div class="filter-bar">
@@ -148,8 +148,7 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
 
 <div class="data-footer">
   <button class="transfer-btn" onclick="exportData()">Export Backup</button>
-  <button class="transfer-btn" onclick="document.getElementById('importFile').click()">Import & Merge</button>
-  <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+  <button class="transfer-btn" onclick="importData()">Import & Merge</button>
 </div>
 
 <div class="overlay" id="addOverlay" onclick="closeForm(event)">
@@ -193,7 +192,7 @@ function populateGenres() {
   });
 }
 
-const STORAGE_KEY = "proc_prod_vRobustExport";
+const STORAGE_KEY = "proc_prod_vReverted";
 let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { completed: [], queue: [], progress: [] };
 let editingId = null;
 let editingFromList = null;
@@ -203,22 +202,21 @@ let pressTimer;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
 
-// ROBUST EXPORT (Opens in new tab)
+// REVERTED EXPORT (Using prompt)
 function exportData() {
   const dataStr = JSON.stringify(items);
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-  window.open(dataUri, '_blank');
+  // Using a prompt instead of copying to clipboard automatically
+  prompt("Copy this code and save it in a safe place:", dataStr);
 }
 
-// ROBUST IMPORT (File Picker)
-function importData(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
+// REVERTED IMPORT (Using prompt)
+function importData() {
+  const code = prompt("Paste your backup code here:");
+  if (code) {
     try {
-      const imported = JSON.parse(e.target.result);
+      const imported = JSON.parse(code);
       if (imported.completed && imported.queue && imported.progress) {
+        
         ['completed', 'queue', 'progress'].forEach(listName => {
           if (imported[listName]) {
             imported[listName].forEach(newItem => {
@@ -236,27 +234,12 @@ function importData(input) {
             });
           }
         });
-        save(); render(); alert("Data merged successfully!");
-      } else { alert("Invalid backup file format."); }
-    } catch (err) { alert("Error reading file. The file might be corrupted."); }
-  };
-  reader.readAsText(file);
-  input.value = '';
-}
-
-// PDF REPORT (Opens in new tab)
-function generateReport() {
-  let content = "<h1>Procrastination Productions Report</h1>";
-  ['progress', 'queue', 'completed'].forEach(list => {
-    content += `<h2>${list.toUpperCase()}</h2>`;
-    items[list].forEach(item => {
-      content += `<p><strong>${item.title}</strong> (${item.type} - ${item.genre}) - Rating: ${item.rating}<br>Notes: ${item.notes}</p><hr>`;
-    });
-  });
-  const win = window.open('', '_blank');
-  win.document.write(content);
-  win.document.close();
-  win.print();
+        save();
+        render();
+        alert("Data merged successfully!");
+      } else { alert("Invalid backup code."); }
+    } catch (err) { alert("Error reading code. Ensure it is correct."); }
+  }
 }
 
 // SELECTION LOGIC
