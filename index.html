@@ -133,7 +133,7 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
     <h1>Procrastination Productions</h1>
     <p id="stats">All systems go</p>
   </div>
-  <button class="export-btn" onclick="window.print()">PDF Report</button>
+  <button class="export-btn" onclick="generateReport()">PDF Report</button>
 </div>
 
 <div class="filter-bar">
@@ -192,7 +192,7 @@ function populateGenres() {
   });
 }
 
-const STORAGE_KEY = "proc_prod_vReverted";
+const STORAGE_KEY = "proc_prod_vRobustReport";
 let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { completed: [], queue: [], progress: [] };
 let editingId = null;
 let editingFromList = null;
@@ -202,14 +202,12 @@ let pressTimer;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
 
-// REVERTED EXPORT (Using prompt)
+// EXPORT/IMPORT (Kept working version)
 function exportData() {
   const dataStr = JSON.stringify(items);
-  // Using a prompt instead of copying to clipboard automatically
   prompt("Copy this code and save it in a safe place:", dataStr);
 }
 
-// REVERTED IMPORT (Using prompt)
 function importData() {
   const code = prompt("Paste your backup code here:");
   if (code) {
@@ -240,6 +238,49 @@ function importData() {
       } else { alert("Invalid backup code."); }
     } catch (err) { alert("Error reading code. Ensure it is correct."); }
   }
+}
+
+// NEW PDF REPORT LOGIC (Opens in new tab)
+function generateReport() {
+  let reportHtml = `
+    <html>
+    <head>
+      <title>Production Report</title>
+      <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { color: #555; }
+        h2 { color: #a78bfa; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .meta { font-size: 12px; color: #777; }
+        .notes { margin-top: 5px; font-style: italic; white-space: pre-wrap; }
+      </style>
+    </head>
+    <body>
+      <h1>Procrastination Productions Report</h1>
+  `;
+
+  ['progress', 'queue', 'completed'].forEach(listName => {
+    reportHtml += `<h2>${listName.toUpperCase()}</h2>`;
+    items[listName].forEach(item => {
+      reportHtml += `
+        <div class="item">
+          <strong>${item.title}</strong> (${item.type} - ${item.genre}) - Rating: ${item.rating}
+          <div class="meta">Logged: ${item.date}</div>
+          <div class="notes">${item.notes}</div>
+        </div>
+      `;
+    });
+  });
+
+  reportHtml += `</body></html>`;
+
+  // Open in a new tab
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(reportHtml);
+  printWindow.document.close();
+  
+  // Optional: automatically trigger print dialog in new tab
+  // printWindow.print();
 }
 
 // SELECTION LOGIC
