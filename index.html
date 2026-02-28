@@ -148,7 +148,7 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
 
 <div class="data-footer">
   <button class="transfer-btn" onclick="exportData()">Export Backup</button>
-  <button class="transfer-btn" onclick="document.getElementById('importFile').click()">Import Backup</button>
+  <button class="transfer-btn" onclick="document.getElementById('importFile').click()">Import & Merge</button>
   <input type="file" id="importFile" style="display:none" onchange="importData(this)">
 </div>
 
@@ -193,7 +193,7 @@ function populateGenres() {
   });
 }
 
-const STORAGE_KEY = "proc_prod_vRobustImport";
+const STORAGE_KEY = "proc_prod_vMerge";
 let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { completed: [], queue: [], progress: [] };
 let editingId = null;
 let editingFromList = null;
@@ -203,11 +203,9 @@ let pressTimer;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
 
-// ROBUST DATA TRANSFER LOGIC
 function exportData() {
   const dataStr = JSON.stringify(items);
   const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-  
   let linkElement = document.createElement('a');
   linkElement.setAttribute('href', dataUri);
   linkElement.setAttribute('download', 'proc_backup.json');
@@ -216,6 +214,7 @@ function exportData() {
   linkElement.remove();
 }
 
+// MERGE LOGIC
 function importData(input) {
   const file = input.files[0];
   if (!file) return;
@@ -223,12 +222,32 @@ function importData(input) {
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const parsed = JSON.parse(e.target.result);
-      if (parsed.completed && parsed.queue && parsed.progress) {
-        items = parsed;
+      const imported = JSON.parse(e.target.result);
+      if (imported.completed && imported.queue && imported.progress) {
+        
+        // Merge lists by ID to prevent duplicates
+        ['completed', 'queue', 'progress'].forEach(listName => {
+          if (imported[listName]) {
+            imported[listName].forEach(newItem => {
+              // Check if item exists in current data
+              let exists = false;
+              ['completed', 'queue', 'progress'].forEach(currentListName => {
+                const index = items[currentListName].findIndex(item => item.id === newItem.id);
+                if (index !== -1) {
+                  items[currentListName][index] = newItem; // Update existing
+                  exists = true;
+                }
+              });
+              if (!exists) {
+                items[listName].push(newItem); // Add new
+              }
+            });
+          }
+        });
+
         save();
         render();
-        alert("Data imported successfully!");
+        alert("Data merged successfully!");
       } else {
         alert("Invalid backup file format.");
       }
@@ -237,7 +256,7 @@ function importData(input) {
     }
   };
   reader.readAsText(file);
-  input.value = ''; // Reset file input
+  input.value = '';
 }
 
 // SELECTION LOGIC
