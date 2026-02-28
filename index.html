@@ -28,7 +28,7 @@ body {
   background-image: radial-gradient(circle at 0% 0%, rgba(167, 139, 250, 0.08) 0%, transparent 40%);
   color: var(--text);
   margin: 0;
-  padding: 20px 16px 150px; /* Extra space for footer */
+  padding: 20px 16px 150px;
 }
 
 .header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
@@ -112,7 +112,6 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
 .del-btn-small { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 10px; text-transform: uppercase; }
 .cancel-btn { color: var(--text-dim); background: none; border: none; font-size: 12px; font-weight: 600; }
 
-/* DATA TRANSFER FOOTER */
 .data-footer {
   margin-top: 50px; padding: 20px; border-top: 1px solid var(--glass-border);
   display: flex; gap: 10px; justify-content: center;
@@ -149,7 +148,8 @@ input[type="date"] { display: flex; align-items: center; justify-content: center
 
 <div class="data-footer">
   <button class="transfer-btn" onclick="exportData()">Export Backup</button>
-  <button class="transfer-btn" onclick="importData()">Import Backup</button>
+  <button class="transfer-btn" onclick="document.getElementById('importFile').click()">Import Backup</button>
+  <input type="file" id="importFile" style="display:none" onchange="importData(this)">
 </div>
 
 <div class="overlay" id="addOverlay" onclick="closeForm(event)">
@@ -193,8 +193,7 @@ function populateGenres() {
   });
 }
 
-// STORAGE KEYS
-const STORAGE_KEY = "proc_prod_vDataTransfer";
+const STORAGE_KEY = "proc_prod_vRobustImport";
 let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { completed: [], queue: [], progress: [] };
 let editingId = null;
 let editingFromList = null;
@@ -204,35 +203,41 @@ let pressTimer;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
 
-// DATA TRANSFER LOGIC
+// ROBUST DATA TRANSFER LOGIC
 function exportData() {
   const dataStr = JSON.stringify(items);
-  const el = document.createElement('textarea');
-  el.value = dataStr;
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-  alert("Backup code copied to clipboard! Save this code in a text file or notes app.");
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  let linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', 'proc_backup.json');
+  document.body.appendChild(linkElement);
+  linkElement.click();
+  linkElement.remove();
 }
 
-function importData() {
-  const code = prompt("Paste your Backup code here:");
-  if (code) {
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
     try {
-      const parsed = JSON.parse(code);
-      if (parsed.completed || parsed.queue || parsed.progress) {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.completed && parsed.queue && parsed.progress) {
         items = parsed;
         save();
         render();
         alert("Data imported successfully!");
       } else {
-        alert("Invalid data format.");
+        alert("Invalid backup file format.");
       }
-    } catch (e) {
-      alert("Error reading code. Make sure you copied the whole thing!");
+    } catch (err) {
+      alert("Error reading file. The file might be corrupted.");
     }
-  }
+  };
+  reader.readAsText(file);
+  input.value = ''; // Reset file input
 }
 
 // SELECTION LOGIC
